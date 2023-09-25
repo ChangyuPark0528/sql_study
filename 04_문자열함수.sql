@@ -2,6 +2,7 @@
 -- lower(소문자), initcap(앞글자만 대문자), upper(대문자)
 
 SELECT * FROM dual;
+
 /*
 dual이라는 테이블은 sys가 소유하는 오라클의 표준 테이블로서,
 오직 한 행에 한 컬럼만 담고 있는 dummy 테이블 입니다.
@@ -72,7 +73,7 @@ SELECT
 FROM dual;
 
 SELECT 
-   REPLACE (REPLACE('My dream is a president', 'president', 'porgrammer'), ' ', '')
+   REPLACE (REPLACE('My dream is a president', 'president', 'programmer'), ' ', '')
 FROM dual;
 
 SELECT 
@@ -113,6 +114,7 @@ EMPLOYEES 테이블에서 JOB_ID가 it_prog인 사원의 이름(first_name)과 급여(salary)를
 조건 3) 급여는 전체 10자리로 출력하되 나머지 자리는 *로 출력합니다. 
 이 열의 열 별칭은 salary입니다.(힌트 : lpad 이용)
 */
+
 SELECT
     RPAD(SUBSTR(first_name,1,3),LENGTH(first_name),'*') AS name,
     LPAD(salary,10,'*') AS salary

@@ -1,7 +1,7 @@
 
 -- 형 변환 함수 TO_CHAR, TO_NUMBER, TO_DATE
 
---날짜를 문자로 TO_CHAR(값, 형식)
+--날짜를 문자로 TO_CHAR(값, 형식)                
 SELECT TO_CHAR(sysdate) FROM dual;
 SELECT TO_CHAR(sysdate, 'YYYY-MM-DD DY PM HH:MI:SS') FROM dual;
 SELECT TO_CHAR(sysdate, 'YYYY-MM-DD HH24:MI:SS') FROM dual;
