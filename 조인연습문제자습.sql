@@ -121,10 +121,24 @@ WHERE e.job_id = 'SA_MAN';
 직원 정보만 출력하세요.
 */
 
+SELECT
+    *
+FROM employees e
+JOIN jobs j
+ON e.job_id = j.job_id
+WHERE j.job_title = 'Stock Manager' OR j.job_title = 'Stock Clerk';
+
 /*
 문제 9.
 -- departments 테이블에서 직원이 없는 부서를 찾아 출력하세요. LEFT OUTER JOIN 사용
 */
+
+SELECT
+    *
+FROM departments d
+LEFT JOIN employees e
+ON d.department_id = e.department_id
+WHERE e.employee_id IS NULL;
 
 /*
 문제 10. 
