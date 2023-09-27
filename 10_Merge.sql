@@ -100,19 +100,18 @@ ROLLBACK;
 CREATE TABLE DEPTS AS
 (SELECT * FROM departments);
 
+-- 문제1
 INSERT INTO DEPTS
-    (department_id, department_name, manager_id, location_id)
+    (department_id, department_name, location_id)
 VALUES
-    (280, '개발', null, 1800);
+    (280, '개발', 1800);
     
 INSERT INTO DEPTS
     (department_id, department_name, manager_id, location_id)
 VALUES
     (290, '회계부', null, 1800);
 
-INSERT INTO DEPTS
-    (department_id, department_name, manager_id, location_id)
-VALUES
+INSERT INTO DEPTS VALUES
     (300, '재정', 301, 1800);
     
 INSERT INTO DEPTS
@@ -125,9 +124,10 @@ INSERT INTO DEPTS
 VALUES
     (320, '영업', 303, 1700);
 
-SELECT
-    *
-FROM DEPTS;
+SELECT * FROM DEPTS;
+
+-- 문제 2
+-- 2-1
 
 DELETE FROM DEPTS
 WHERE department_id = 290;
@@ -221,7 +221,6 @@ WHEN MATCHED THEN
 WHEN NOT MATCHED THEN
     INSERT VALUES
     (b.job_id, b.job_title, b.min_salary, b.max_salary);
-
 
 ROLLBACK;
 
