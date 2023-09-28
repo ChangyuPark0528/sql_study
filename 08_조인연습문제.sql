@@ -203,7 +203,7 @@ FROM employees e1
 LEFT JOIN employees e2
 ON e1.manager_id = e2.employee_id
 WHERE e1.manager_id IS NOT NULL
-ORDER BY e1.salary DESC;
+ORDER BY e2.salary DESC;
 
 
 

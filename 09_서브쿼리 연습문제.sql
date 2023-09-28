@@ -213,12 +213,47 @@ employees테이블, departments테이블을 left조인 hire_date를 오름차순 기준으로
 조건) hire_date를 기준으로 오름차순 정렬 되어야 합니다. rownum이 틀어지면 안됩니다.
 */
 
-SELECT * FROM
+SELECT ROWNUM, TBL.* FROM 
+(SELECT A.EMPLOYEE_ID, A.FIRST_NAME, A.PHONE_NUMBER, A.HIRE_DATE, A.DEPARTMENT_ID, B.DEPARTMENT_NAME 
+FROM EMPLOYEES A LEFT JOIN DEPARTMENTS B 
+ON A.DEPARTMENT_ID=B.DEPARTMENT_ID
+ORDER BY A.HIRE_DATE) TBL WHERE ROWNUM < 11;
 
-employees e
+
+SELECT ROWNUM , A.* FROM 
+(SELECT * FROM EMPLOYEES ORDER BY HIRE_DATE) A WHERE ROWNUM <11;
+
+
+
+SELECT ROWNUM, tbl.* FROM 
+(SELECT e.employee_id, e.first_name, e.phone_number,
+        e.hire_date, e.department_id, d.department_name
+FROM employees e
 LEFT JOIN departments d
 ON e.department_id = d.department_id
+ORDER BY e.hire_date ASC) tbl
+WHERE ROWNUM >= 1 AND ROWNUM < 11;
 
+
+
+/*
+문제 12. 
+employees테이블, departments테이블을 left조인 hire_date를 오름차순 기준으로 
+1-10번째 데이터만 출력합니다.
+조건) rownum을 적용하여 번호, 직원아이디, 이름, 전화번호, 입사일, 
+부서아이디, 부서이름 을 출력합니다.
+조건) hire_date를 기준으로 오름차순 정렬 되어야 합니다. rownum이 틀어지면 안됩니다.
+*/
+
+SELECT ROWNUM AS rn, tbl.* FROM
+(SELECT
+    e.employee_id, e.first_name||' '||e.last_name AS full_name,
+    e.phone_number, e.hire_date, e.department_id, d.department_name
+FROM employees e
+LEFT JOIN departments d
+ON e.department_id = d.department_id
+ORDER BY e.hire_date ASC)tbl
+WHERE ROWNUM < 11;
 
 
 /*
@@ -227,14 +262,70 @@ ON e.department_id = d.department_id
 DEPARTMENT_ID,DEPARTMENT_NAME을 출력하세요.
 */
 
+SELECT
+    e.last_name, e.job_id,
+    e.department_id, d.department_name
+FROM employees e
+LEFT JOIN departments d
+ON e.department_id = d.department_id
+WHERE e.job_id = 'SA_MAN';
+
+
+--SELECT
+--    e.last_name, e.job_id,
+--    e.department_id, 
+--    (select department_name 
+--    from departments d
+--    JOIN employees e
+--    ON d.department_id = e.department_id)
+--FROM employees e
+--WHERE e.job_id = 'SA_MAN';
+
+SELECT
+    e.last_name, e.job_id,
+    e.department_id, 
+    (select d.department_name 
+    from departments d where e.department_id = d.department_id)
+FROM employees e
+WHERE e.job_id = 'SA_MAN';
 
 
 /*
 문제 14
---DEPARTMENT테이블에서 각 부서의 ID, NAME, MANAGER_ID와 부서에 속한 인원수를 출력하세요.
+--DEPARTMENT테이블에서 각 부서의 DEPARTMENT_ID, NAME, MANAGER_ID와 부서에 속한 인원수를 출력하세요.
 --인원수 기준 내림차순 정렬하세요.
 --사람이 없는 부서는 출력하지 뽑지 않습니다.
 */
+
+SELECT
+    d.department_id, d.department_name , d.manager_id,
+    (
+    SELECT
+            COUNT(*)
+        FROM employees e
+        WHERE e.department_id = d.department_id
+        GROUP BY department_id
+    ) AS 사원수
+FROM departments d
+WHERE d.manager_id IS NOT NULL
+ORDER BY 사원수 DESC;
+
+SELECT * FROM (
+SELECT
+    d.department_id, d.department_name , d.manager_id,
+    (
+    SELECT
+            COUNT(*)
+        FROM employees e
+        WHERE e.department_id = d.department_id
+        GROUP BY department_id
+    ) AS 사원수
+FROM departments d) 
+WHERE 사원수 IS NOT NULL
+ORDER BY 사원수 DESC;
+
+
+--힌트: GROUP BY
 
 /*
 문제 15
@@ -242,12 +333,59 @@ DEPARTMENT_ID,DEPARTMENT_NAME을 출력하세요.
 --부서별 평균이 없으면 0으로 출력하세요.
 */
 
+select d.department_id, d.department_name, d.manager_id, d.location_id, 
+round(nvl((select avg(e.salary) from employees e where e.department_id=d.department_id group by e.department_id),0),2) as avg_sal
+,l.street_address, l.postal_code
+from departments d left join locations l on d.location_id=l.location_id;
+
+select * from LOCATIONS;
+
+
+(select e.department_id, avg(e.salary) from employees e group by e.department_id);
+
+
+desc departments;
+
+
+
+SELECT * FROM departments d;
+
+SELECT 
+    d.department_id, d.department_name, d.manager_id, d.location_id,
+    loc.postal_code, loc.street_address,
+    TRUNC(NVL((SELECT
+    AVG(e.salary)
+    FROM employees e
+    WHERE e.department_id = d.department_id
+    GROUP BY e.department_id
+    ),0),2) AS sal_avg
+FROM departments d
+LEFT JOIN locations loc
+ON d.location_id = loc.location_id;
+
 /*
 문제 16
 -문제 15 결과에 대해 DEPARTMENT_ID기준으로 내림차순 정렬해서 
 ROWNUM을 붙여 1-10 데이터 까지만 출력하세요.
 */
 
+SELECT ROWNUM,tbl.* FROM
+(
+SELECT 
+    d.department_id, d.department_name, d.manager_id, d.location_id,
+    loc.postal_code, loc.street_address,
+    TRUNC(NVL((SELECT
+    AVG(e.salary)
+    FROM employees e
+    WHERE e.department_id = d.department_id
+    GROUP BY e.department_id
+    ),0),2) AS sal_avg
+FROM departments d
+LEFT JOIN locations loc
+ON d.location_id = loc.location_id
+ORDER BY d.department_id DESC
+) tbl
+WHERE ROWNUM <= 10;
 
 
 
