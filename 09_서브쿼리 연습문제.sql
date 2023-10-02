@@ -254,6 +254,25 @@ LEFT JOIN departments d
 ON e.department_id = d.department_id
 ORDER BY e.hire_date ASC)tbl
 WHERE ROWNUM < 11;
+-----------------------------------------------------------------------------풀이
+
+SELECT * FROM
+    (
+    SELECT ROWNUM AS rn, a.*
+        FROM
+        (
+        SELECT 
+            e.employee_id, e.first_name, e.phone_number,
+            e.hire_date, d.department_id, d.department_name
+        FROM employees e LEFT JOIN departments d
+        ON e.department_id = d.department_id
+        ORDER BY hire_date ASC
+        ) a
+    )
+WHERE rn > 0 AND rn <= 10;
+
+
+
 
 
 /*
@@ -288,13 +307,26 @@ SELECT
     from departments d where e.department_id = d.department_id)
 FROM employees e
 WHERE e.job_id = 'SA_MAN';
+-----------------------------------------------------------------------------풀이
+
+SELECT
+    tbl.*, d.department_name
+FROM
+    (
+    SELECT
+        last_name, job_id, department_id
+    FROM employees
+    WHERE job_id = 'SA_MAN'
+    ) tbl
+JOIN departments d
+ON tbl.department_id = d.department_id;
 
 
 /*
 문제 14
 --DEPARTMENT테이블에서 각 부서의 DEPARTMENT_ID, NAME, MANAGER_ID와 부서에 속한 인원수를 출력하세요.
 --인원수 기준 내림차순 정렬하세요.
---사람이 없는 부서는 출력하지 뽑지 않습니다.
+--사람이 없는 부서는 출력하지 않습니다.
 */
 
 SELECT
@@ -309,23 +341,39 @@ SELECT
 FROM departments d
 WHERE d.manager_id IS NOT NULL
 ORDER BY 사원수 DESC;
-
+--------------------------------------------------------------------------------
 SELECT * FROM (
-SELECT
-    d.department_id, d.department_name , d.manager_id,
-    (
     SELECT
-            COUNT(*)
-        FROM employees e
-        WHERE e.department_id = d.department_id
-        GROUP BY department_id
-    ) AS 사원수
-FROM departments d) 
+        d.department_id, d.department_name , d.manager_id,
+        (
+        SELECT
+                COUNT(*)
+            FROM employees e
+            WHERE e.department_id = d.department_id
+            GROUP BY department_id
+        ) AS 사원수
+    FROM departments d) 
 WHERE 사원수 IS NOT NULL
 ORDER BY 사원수 DESC;
 
 
 --힌트: GROUP BY
+-----------------------------------------------------------------------------풀이
+
+SELECT
+    d.department_id, d.department_name, d.manager_id,
+    a.total
+FROM departments d
+JOIN
+    (
+    SELECT
+        department_id, COUNT(*) AS total
+    FROM employees 
+    GROUP BY department_id
+    ) a
+ON d.department_id = a.department_id
+ORDER BY a.total DESC;
+
 
 /*
 문제 15
@@ -340,12 +388,10 @@ from departments d left join locations l on d.location_id=l.location_id;
 
 select * from LOCATIONS;
 
-
 (select e.department_id, avg(e.salary) from employees e group by e.department_id);
 
-
 desc departments;
-
+------------------------------------------------------------------------------------------------------------------------------------
 
 
 SELECT * FROM departments d;
@@ -362,6 +408,25 @@ SELECT
 FROM departments d
 LEFT JOIN locations loc
 ON d.location_id = loc.location_id;
+-----------------------------------------------------------------------------풀이
+ 
+SELECT
+    d.*,
+    loc.street_address, loc.postal_code,
+    NVL(tbl.result,0) AS 부서별평균급여
+FROM departments d
+JOIN locations loc
+ON d.location_id = loc.location_id
+LEFT JOIN
+    (
+    SELECT 
+        department_id,
+        TRUNC(AVG(salary),0) AS result
+    FROM employees
+    GROUP BY department_id
+    ) tbl
+ON d.department_id = tbl.department_id;
+
 
 /*
 문제 16
@@ -387,9 +452,33 @@ ORDER BY d.department_id DESC
 ) tbl
 WHERE ROWNUM <= 10;
 
+-----------------------------------------------------------------------------풀이
 
-
-
+SELECT * FROM
+    (
+    SELECT ROWNUM AS rn, tbl2.*
+        FROM
+        (
+        SELECT
+            d.*,
+            loc.street_address, loc.postal_code,
+            NVL(tbl.result,0) AS 부서별평균급여
+        FROM departments d
+        JOIN locations loc
+        ON d.location_id = loc.location_id
+        LEFT JOIN
+            (
+            SELECT 
+                department_id,
+                TRUNC(AVG(salary),0) AS result
+            FROM employees
+            GROUP BY department_id
+            ) tbl
+        ON d.department_id = tbl.department_id
+        ORDER BY d.department_id DESC
+        ) tbl2
+    )
+WHERE rn > 0 AND rn <= 10;
 
 
 
