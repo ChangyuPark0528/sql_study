@@ -4,7 +4,6 @@
 -- 익명블록을 만들어 보자. (변수에 담아서 출력하세요.)
 SET SERVEROUTPUT ON;
 
-
 DECLARE
     v_emp_name employees.first_name%TYPE;
     v_emp_email employees.email%TYPE;
