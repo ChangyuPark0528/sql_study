@@ -16,7 +16,7 @@ CREATE SEQUENCE board_seq
     NOCYCLE
     NOCACHE;
 
-
+SELECT * FROM jdbc_board;
 
 
 
